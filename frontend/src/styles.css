@@ -1,0 +1,109 @@
+:root {
+  font-family: "Segoe UI", sans-serif;
+  color: #18222f;
+  background: #eef3f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+@media (min-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #d5deea;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(24, 34, 47, 0.08);
+}
+
+h1,
+h2 {
+  margin-top: 0;
+}
+
+.subtle {
+  margin-top: -8px;
+  color: #4e5d6c;
+}
+
+.form-row {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #b8c6d8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #f9fbfd;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: #155eef;
+  color: #ffffff;
+}
+
+button:hover {
+  background: #0048d9;
+}
+
+.message {
+  border-radius: 8px;
+  padding: 12px;
+  background: #edf7ee;
+  color: #1f5f2c;
+}
+
+.message.error {
+  background: #fff1f1;
+  color: #8b1e1e;
+}
+
+.item-list {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.7;
+}
+
+.item-type {
+  color: #4e5d6c;
+}

@@ -1,81 +1,170 @@
-# File Handling CLI (Python)
+# File Manager Web App
 
-A small interactive command-line program that lets you **create**, **append**, **read**, and **delete** files in the current working directory. It also lists the files/folders it can see before each operation.
+This project converts the original Python CLI file manager into a minimal full-stack web app.
 
-## What `main.py` does
+- Backend: FastAPI
+- Frontend: React + Vite
+- Communication: JSON REST API
+- Storage scope: only inside the `data/` folder at the project root
 
-When you run `main.py`, it shows a menu:
+## Project Tree
 
-- `1` → Create a new file and write initial content
-- `2` → Add data in a file (append new content to an existing file)
-- `3` → Read and print an existing file
-- `4` → Delete an existing file
-
-Before each action, the program prints a numbered list of files/folders found under the current directory using recursive search.
-
-## Requirements
-
-- Python 3.8+ (works on Windows/macOS/Linux)
-
-No external packages are required.
-
-## How to run
-
-From the folder that contains `main.py`:
-
-```bash
-python main.py
+```text
+file_handdling/
+|-- backend/
+|   |-- app.py
+|   `-- requirements.txt
+|-- frontend/
+|   |-- package.json
+|   |-- vite.config.js
+|   |-- index.html
+|   `-- src/
+|       |-- App.jsx
+|       |-- main.jsx
+|       `-- styles.css
+|-- data/
+|-- main.py
+|-- python.py
+`-- README.md
 ```
 
-> Tip: The script uses `Path(".")`, so it operates relative to **your current terminal folder**.
+## Features
 
-## Usage examples
+- List files and folders recursively inside `data/`
+- Create a file with initial content
+- Read file content
+- Append content with a leading newline
+- Delete a file
 
-### 1) Create a file
+## Security Rules
 
-1. Choose `1`
-2. Enter a filename (example: `notes.txt`)
-3. Enter the content to write
+- Rejects invalid paths such as `../secret.txt`
+- Rejects paths that escape the `data/` directory
+- Only performs read, append, and delete operations on regular files
+- Uses UTF-8 for all file reads and writes
+- Returns JSON errors with proper HTTP status codes
 
-Expected result:
+## Backend API
 
-- If the file does **not** exist → it is created and written to
-- If the file already exists → you will see `FILE ALREADY EXISTS`
+### `GET /api/items`
 
-### 2) Append to a file
+Returns:
 
-1. Choose `2`
-2. Enter an existing filename (example: `notes.txt`)
-3. Enter the content to append
+```json
+{
+	"items": [
+		{ "path": "notes.txt", "type": "file" },
+		{ "path": "docs", "type": "dir" }
+	]
+}
+```
 
-Notes:
+### `POST /api/files`
 
-- Appends text with a leading newline (`\n`) so each entry goes on a new line.
+Request body:
 
-### 3) Read a file
+```json
+{
+	"name": "notes/today.txt",
+	"content": "hello"
+}
+```
 
-1. Choose `3`
-2. Enter an existing filename (example: `notes.txt`)
+### `GET /api/files/{name}`
 
-Expected result:
+Response:
 
-- The file contents are printed to the terminal
+```json
+{
+	"name": "notes/today.txt",
+	"content": "hello"
+}
+```
 
-### 4) Delete a file
+### `POST /api/files/{name}/append`
 
-1. Choose `4`
-2. Enter an existing filename (example: `notes.txt`)
+Request body:
 
-Expected result:
+```json
+{
+	"content": "more text"
+}
+```
 
-- The file is removed using `Path.unlink()`
+### `DELETE /api/files/{name}`
 
-## Error handling
+Response:
 
-- Non-numeric menu input is caught as a `ValueError`.
-- Each file operation is wrapped in `try/except` and prints a friendly error message.
+```json
+{
+	"message": "File deleted successfully",
+	"name": "notes/today.txt"
+}
+```
 
-## Project files
+## How To Run
 
-- `main.py` — the interactive file-handling program
-- `python.py` — a small test file (prints `hii`)
+### Backend (Windows PowerShell)
+
+From the project root:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r backend\requirements.txt
+uvicorn backend.app:app --reload
+```
+
+Backend will run at `http://127.0.0.1:8000`.
+
+### Frontend (Windows PowerShell)
+
+Open a second terminal from the project root:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend will run at `http://127.0.0.1:5173`.
+
+## Quick Manual Test Steps
+
+Create a file:
+
+```powershell
+curl -Method POST http://127.0.0.1:8000/api/files \
+	-Headers @{"Content-Type"="application/json"} \
+	-Body '{"name":"notes.txt","content":"hello"}'
+```
+
+List items:
+
+```powershell
+curl http://127.0.0.1:8000/api/items
+```
+
+Read a file:
+
+```powershell
+curl http://127.0.0.1:8000/api/files/notes.txt
+```
+
+Append to a file:
+
+```powershell
+curl -Method POST http://127.0.0.1:8000/api/files/notes.txt/append \
+	-Headers @{"Content-Type"="application/json"} \
+	-Body '{"content":"second line"}'
+```
+
+Delete a file:
+
+```powershell
+curl -Method DELETE http://127.0.0.1:8000/api/files/notes.txt
+```
+
+## Original CLI Script
+
+The original CLI implementation is still present in `main.py` for reference. The new web app moves that behavior into API endpoints and a browser UI.
